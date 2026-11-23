@@ -29,8 +29,14 @@
     }
     return false;
   };
+  // Matched on the path, because Framer carries query strings (ad and tracking
+  // parameters) over onto its links.
+  const isPricing = (link) => {
+    try { return /\/pricing\/?$/.test(new URL(link.getAttribute('href'), location.href).pathname); } catch { return false; }
+  };
   const add = () => {
-    for (const pricing of document.querySelectorAll('a[href$="pricing"]')) {
+    for (const pricing of document.querySelectorAll('a[href]')) {
+      if (!isPricing(pricing)) continue;
       if (pricing.closest('[' + MARK + ']')) continue;
       if (pricing.getBoundingClientRect().width === 0 || !inFixedLayer(pricing)) continue;
       // The link sits inside a wrapper; the wrapper is the item in the row of links.
