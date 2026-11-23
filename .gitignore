@@ -6,3 +6,6 @@ next-env.d.ts
 
 # Local-only "reach goal" blocks (invented proof); never published.
 reach/
+
+# Local handover notes.
+HANDOVER.md
