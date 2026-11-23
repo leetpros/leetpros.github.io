@@ -24,7 +24,9 @@ export function listRoutes(): string[][] {
 
 export function loadPage(slug: string[]): MirroredPage {
   const name = slug.length ? slug.join("/") : "index";
-  const html = fs.readFileSync(path.join(PAGES_DIR, `${name}.html`), "utf8");
+  const raw = fs.readFileSync(path.join(PAGES_DIR, `${name}.html`), "utf8");
+  const handBuilt = /<html[^>]*\sdata-lp[\s=>]/i.test(raw);
+  const html = handBuilt ? assemble(raw) : raw;
 
   const htmlTag = html.match(/<html([^>]*)>/i)?.[1] ?? "";
   const htmlAttrs: Record<string, string> = {};
@@ -32,13 +34,37 @@ export function loadPage(slug: string[]): MirroredPage {
 
   const head = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? "";
   const body = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)?.[1] ?? "";
-  return { htmlAttrs, head: patchHead(head), body };
+  // Hand-built pages carry no Framer runtime, so they skip the Framer head patch.
+  return { htmlAttrs, head: handBuilt ? head : patchHead(head), body };
+}
+
+const PARTIALS_DIR = path.join(process.cwd(), "content", "partials");
+const REACH_DIR = path.join(process.cwd(), "reach");
+
+/** Hand-built pages (marked `<html data-lp>`) are put together from shared pieces:
+ *
+ *  - `<!--include:nav-->` pulls in `content/partials/nav.html`.
+ *  - `<!--slot:proof-->fallback<!--/slot-->` keeps the fallback in the published site.
+ *    Built with `LP_REACH=1`, it is replaced by `reach/proof.html` when that file
+ *    exists. `reach/` is gitignored: it holds the "reach goal" version of the site,
+ *    with proof that has not been earned yet, for local viewing only. */
+function assemble(html: string): string {
+  const reach = process.env.LP_REACH === "1";
+  return html
+    .replace(/<!--slot:([\w-]+)-->([\s\S]*?)<!--\/slot-->/g, (_all, slot: string, fallback: string) => {
+      const file = path.join(REACH_DIR, `${slot}.html`);
+      return reach && fs.existsSync(file) ? fs.readFileSync(file, "utf8") : fallback;
+    })
+    .replace(/<!--include:([\w-]+)-->/g, (_all, part: string) =>
+      fs.readFileSync(path.join(PARTIALS_DIR, `${part}.html`), "utf8"),
+    );
 }
 
 /** Drop head tags that Next.js already emits or that are useless off Framer,
- *  and load the CMS range shim (public/framer-cms-range.js) before Framer's runtime. */
+ *  load the CMS range shim (public/framer-cms-range.js) before Framer's runtime,
+ *  and load the script that adds the "ERPNext" link to the mirrored navigation. */
 function patchHead(head: string): string {
-  return '<script src="/framer-cms-range.js"></script>\n' + head
+  return '<script src="/framer-cms-range.js"></script>\n<script defer src="/lp/framer-nav.js"></script>\n' + head
     .replace(/<meta charset="[^"]*">\s*/i, "")
     .replace(/<meta name="viewport"[^>]*>\s*/i, "")
     .replace(/<link href="https:\/\/fonts\.gstatic\.com" rel="preconnect"[^>]*>\s*/i, "");
