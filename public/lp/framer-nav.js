@@ -1,15 +1,38 @@
 // Runs on the mirrored Framer pages only. Framer's script rebuilds those pages
-// after load, so their markup can't be edited in place; this adds an "ERPNext"
-// link next to "Pricing" in the top navigation once the page has settled, and
-// puts it back if Framer redraws the bar.
+// after load, so their markup can't be edited in place. This does two things.
 (() => {
+  // 1. Links to the hand-built pages get a full page load. Framer's script
+  //    otherwise handles them itself, without leaving the page, and draws the old
+  //    Framer home page it still carries.
+  const HAND_BUILT = new Set(['/', '/index', '/erpnext']);
+  addEventListener('click', (event) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = event.target.closest && event.target.closest('a[href]');
+    if (!link || link.target === '_blank') return;
+    const url = new URL(link.getAttribute('href'), location.href);
+    if (url.origin !== location.origin) return;
+    const path = url.pathname.replace(/\/+$/, '') || '/';
+    if (!HAND_BUILT.has(path)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    location.assign(url.href);
+  }, true);
+
+  // 2. An "ERPNext" link is added before "Pricing" in the navigation bar and the
+  //    phone menu (both are fixed to the screen; footer links are not), and put
+  //    back if Framer redraws them.
   const MARK = 'data-lp-erp';
+  const inFixedLayer = (el) => {
+    for (let node = el; node && node !== document.body; node = node.parentElement) {
+      const position = getComputedStyle(node).position;
+      if (position === 'fixed' || position === 'sticky') return true;
+    }
+    return false;
+  };
   const add = () => {
     for (const pricing of document.querySelectorAll('a[href$="pricing"]')) {
       if (pricing.closest('[' + MARK + ']')) continue;
-      const box = pricing.getBoundingClientRect();
-      const inTopBar = box.width > 0 && box.top < 140 && box.top >= 0 && !pricing.closest('footer');
-      if (!inTopBar) continue;
+      if (pricing.getBoundingClientRect().width === 0 || !inFixedLayer(pricing)) continue;
       // The link sits inside a wrapper; the wrapper is the item in the row of links.
       let item = pricing;
       while (item.parentElement && item.parentElement.children.length === 1) item = item.parentElement;

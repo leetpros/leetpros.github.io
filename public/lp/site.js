@@ -1,6 +1,10 @@
 // Behaviour for the hand-built pages: scroll reveal, the mobile menu and the
 // savings calculator. Every page reads fine without it.
 (() => {
+  // The inline script in <head> hides the reveal-on-scroll elements only for as
+  // long as this file is expected; it gives up after three seconds without this flag.
+  window.lpReady = true;
+
   // ----- reveal on scroll -----
   const rising = document.querySelectorAll('[data-rise]');
   if ('IntersectionObserver' in window) {

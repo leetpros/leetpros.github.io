@@ -46,8 +46,7 @@ const REACH_DIR = path.join(process.cwd(), "reach");
  *  - `<!--include:nav-->` pulls in `content/partials/nav.html`.
  *  - `<!--slot:proof-->fallback<!--/slot-->` keeps the fallback in the published site.
  *    Built with `LP_REACH=1`, it is replaced by `reach/proof.html` when that file
- *    exists. `reach/` is gitignored: it holds the "reach goal" version of the site,
- *    with proof that has not been earned yet, for local viewing only. */
+ *    exists. `reach/` is untracked: it holds draft sections for local preview. */
 function assemble(html: string): string {
   const reach = process.env.LP_REACH === "1";
   return html

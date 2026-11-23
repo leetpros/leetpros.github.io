@@ -31,7 +31,7 @@ The Framer home page that `/` used to show is kept, unrouted, in `content/legacy
 | `pages/_document.tsx` | Emits each page's `<head>` and `<body>` unchanged |
 | `scripts/og-card.html` | Source of the link-preview pictures |
 | `scripts/harvest.py` | Re-downloads the old Framer site. See the warning below |
-| `reach/` | Local only, gitignored. See "Reach version" |
+| `reach/` | Local drafts, untracked. See "Reach version" |
 
 ## Commands
 
@@ -46,11 +46,10 @@ npm start         # preview out/ (it prints the address; port 3000 if free)
 
 ## Reach version
 
-The pages have slots (`<!--slot:erp-proof--><!--/slot-->`) where proof will go once it exists:
-client counts, case studies, testimonials. The published site leaves them empty. The local
-folder `reach/` holds an invented, aspirational version of that proof as a target; it is
-gitignored and is only built with `LP_REACH=1 npm run build`. `reach/README.md` lists what has
-to become true before each block can move into `content/`.
+The pages have slots (`<!--slot:erp-proof--><!--/slot-->`) for sections that are not written
+yet: results, case studies, client quotes. The published site leaves them empty. Drafts of
+those sections can be kept in a local, untracked `reach/` folder and previewed with
+`LP_REACH=1 npm run build`; a block moves into `content/` once it is ready to publish.
 
 ## Deploy
 

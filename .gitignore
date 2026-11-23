@@ -4,7 +4,7 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 
-# Local-only "reach goal" blocks (invented proof); never published.
+# Local draft sections for the slots in content/pages; previewed with LP_REACH=1.
 reach/
 
 # Local handover notes.
