@@ -181,10 +181,10 @@ ul, ol { list-style: none; }
 .bill__total > span:not(.num) { font-size: 13px; color: var(--body); }
 .bill__total .num { font-size: 30px; line-height: 1; }
 .bill--before .bill__total .num { color: var(--faint); text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: rgba(240, 72, 62, 0.7); }
-.bills__save { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%) rotate(-3deg); z-index: 2; display: grid; justify-items: center; gap: 2px; padding: 14px 20px; background: #121419; color: #fff; border-radius: 20px; box-shadow: 0 12px 30px rgba(18, 20, 25, 0.3); white-space: nowrap; }
+.bills__save { position: absolute; left: 50%; bottom: -46px; transform: translateX(-50%) rotate(-3deg); z-index: 2; display: grid; justify-items: center; gap: 2px; padding: 14px 20px; background: #121419; color: #fff; border-radius: 20px; box-shadow: 0 12px 30px rgba(18, 20, 25, 0.3); white-space: nowrap; }
 .bills__save .num { font-size: 26px; line-height: 1.1; }
 .bills__save > span:not(.num) { font-size: 11.5px; color: rgba(255, 255, 255, 0.66); letter-spacing: 0; }
-.caption { margin-top: 52px; text-align: center; }
+.caption { margin-top: 68px; text-align: center; }
 
 /* ---------- hero visual: app window ---------- */
 .window { width: min(1000px, 100%); margin: 60px auto 0; background: #fff; border-radius: 22px; box-shadow: var(--shadow-lift); overflow: hidden; text-align: left; border: 1px solid rgba(18, 20, 25, 0.05); }
